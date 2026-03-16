@@ -1,31 +1,37 @@
 from playwright.sync_api import sync_playwright
+from utils.logger import get_logger
 
+logger = get_logger()
 
-def create_external_app(username, password, app_name):
+def create_external_app(console_url, username, password, app_name):
 
     with sync_playwright() as p:
 
         browser = p.chromium.launch(headless=True)
+
         page = browser.new_page()
 
-        page.goto("https://eu-west-2.sso.signin.aws/platform/d-9c674bea45/login?workflowStateHandle=5e07a8b0-4d00-4423-a063-cdf16a452804")
+        page.goto(console_url)
 
-        page.fill("input[name='username']", username)
-        page.fill("input[name='password']", password)
+        page.fill('input[name="username"]', username)
+        page.fill('input[name="password"]', password)
 
-        page.click("button[type='submit']")
+        page.click('button[type="submit"]')
 
         page.wait_for_load_state("networkidle")
 
-        page.click("text=Applications")
+        logger.info("Logged into AWS console")
+
+        page.goto("https://console.aws.amazon.com/singlesignon/applications")
+
         page.click("text=Add application")
 
         page.click("text=External AWS Account")
 
-        page.fill("input[name='appName']", app_name)
+        page.fill('input[name="name"]', app_name)
 
-        page.click("button:has-text('Create application')")
+        page.click("button:has-text('Create')")
 
-        page.wait_for_selector("text=Application created")
+        logger.info("External AWS Application Created")
 
         browser.close()
