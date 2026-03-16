@@ -1,14 +1,11 @@
-import boto3
+from .boto_session import get_boto3_client
+from utils.logger import get_logger
 
+logger = get_logger()
 
-def assign_group(
-    instance_arn,
-    permission_set_arn,
-    principal_id,
-    account_id
-):
+def assign_group(instance_arn, permission_set_arn, group_id, account_id):
 
-    client = boto3.client("sso-admin")
+    client = get_boto3_client("sso-admin")
 
     response = client.create_account_assignment(
         InstanceArn=instance_arn,
@@ -16,7 +13,9 @@ def assign_group(
         TargetType="AWS_ACCOUNT",
         PermissionSetArn=permission_set_arn,
         PrincipalType="GROUP",
-        PrincipalId=principal_id
+        PrincipalId=group_id
     )
+
+    logger.info("Group assigned successfully")
 
     return response
