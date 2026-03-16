@@ -1,22 +1,18 @@
-import boto3
+from .boto_session import get_boto3_client
+from utils.logger import get_logger
 
+logger = get_logger()
 
 def list_permission_sets(instance_arn):
-    client = boto3.client("sso-admin")
+
+    client = get_boto3_client("sso-admin")
 
     response = client.list_permission_sets(
         InstanceArn=instance_arn
     )
 
-    return response["PermissionSets"]
+    permission_sets = response["PermissionSets"]
 
+    logger.info(f"Found {len(permission_sets)} permission sets")
 
-def describe_permission_set(instance_arn, permission_set_arn):
-    client = boto3.client("sso-admin")
-
-    response = client.describe_permission_set(
-        InstanceArn=instance_arn,
-        PermissionSetArn=permission_set_arn
-    )
-
-    return response["PermissionSet"]
+    return permission_sets
