@@ -1,14 +1,10 @@
 import boto3
+import yaml
 
+def load_config():
+    with open("config/config.yaml") as f:
+        return yaml.safe_load(f)
 
-def get_boto_session(profile=None, region="us-east-1"):
-    if profile:
-        session = boto3.Session(profile_name=profile, region_name=region)
-    else:
-        session = boto3.Session(region_name=region)
-    return session
-
-
-def get_client(service, profile=None):
-    session = get_boto_session(profile)
-    return session.client(service)
+def get_boto3_client(service):
+    config = load_config()
+    return boto3.client(service, region_name=config["region"])
