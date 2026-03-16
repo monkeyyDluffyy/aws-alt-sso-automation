@@ -1,11 +1,11 @@
 pipeline {
-    agent { label 'playwright-node' }
+    agent any
 
     stages {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/company/aws-alt-sso-automation.git'
+                git 'https://github.com/monkeyyDluffyy/aws-alt-sso-automation.git'
             }
         }
 
@@ -13,7 +13,7 @@ pipeline {
             steps {
                 sh '''
                 python3 -m venv venv
-                . venv/bin/activate
+                source venv/bin/activate
                 pip install -r requirements.txt
                 playwright install
                 '''
@@ -23,11 +23,10 @@ pipeline {
         stage('Run Automation') {
             steps {
                 sh '''
-                . venv/bin/activate
+                source venv/bin/activate
                 python src/main.py
                 '''
             }
         }
-
     }
 }
