@@ -1,0 +1,18 @@
+region: us-east-1
+
+sso_instance_arn: arn:aws:sso:::instance/ssoins-7535c244f3eca928
+identity_store_id: d-9c674bea45
+
+existing_permission_set_name: AdminAccess
+
+new_application_name: External-AWS-App
+
+target_account_id: "489157521330"
+
+role_name: ExternalSSORole
+
+saml_provider_name: ExternalSSOProvider
+
+aws_console_url: https://ssoins-7535c244f3eca928.portal.eu-west-2.app.aws
+aws_username: abhay
+aws_password: Abhayshri@21
