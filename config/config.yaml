@@ -1,4 +1,4 @@
-region: ey-west-2
+region: eu-west-2
 
 sso_instance_arn: arn:aws:sso:::instance/ssoins-7535c244f3eca928
 identity_store_id: d-9c674bea45
