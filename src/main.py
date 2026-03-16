@@ -1,47 +1,49 @@
+import yaml
+
 from aws.sso_permissions import list_permission_sets
-from aws.iam_roles import create_saml_provider
+from aws.iam_roles import create_saml_provider, create_role
 from aws.assignments import assign_group
 from ui.create_external_app import create_external_app
 
-
-INSTANCE_ARN = "arn:aws:sso:::instance/ssoins-123"
-ACCOUNT_ID = "111111111111"
-ROLE_NAME = "ExternalSSORole"
-
+def load_config():
+    with open("config/config.yaml") as f:
+        return yaml.safe_load(f)
 
 def main():
 
-    print("Fetching permission sets")
+    config = load_config()
 
-    permission_sets = list_permission_sets(INSTANCE_ARN)
+    instance_arn = config["sso_instance_arn"]
 
-    print(permission_sets)
+    permission_sets = list_permission_sets(instance_arn)
 
-    print("Creating External AWS App")
+    permission_set_arn = permission_sets[0]
 
     create_external_app(
-        username="admin",
-        password="password",
-        app_name="External-SSO-App"
+        config["aws_console_url"],
+        config["aws_username"],
+        config["aws_password"],
+        config["new_application_name"]
     )
 
-    print("Creating IAM role and IdP")
+    saml_metadata = "<xml>metadata</xml>"
 
-    create_saml_provider(
-        ACCOUNT_ID,
-        saml_metadata="<xml>",
-        role_name=ROLE_NAME
+    provider_arn = create_saml_provider(
+        saml_metadata,
+        config["saml_provider_name"]
     )
 
-    print("Assigning group")
+    create_role(
+        config["role_name"],
+        provider_arn
+    )
 
     assign_group(
-        INSTANCE_ARN,
-        permission_sets[0],
-        principal_id="group-id",
-        account_id=ACCOUNT_ID
+        instance_arn,
+        permission_set_arn,
+        "example-group-id",
+        config["target_account_id"]
     )
-
 
 if __name__ == "__main__":
     main()
